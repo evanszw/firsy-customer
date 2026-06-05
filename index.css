@@ -1,0 +1,458 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState } from 'react';
+import { QuickBookRequest } from '../types';
+import { motion } from 'motion/react';
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Facebook,
+  Instagram,
+  Wrench,
+  Clock,
+  ShieldCheck,
+  Send,
+  Loader2,
+  AlertTriangle,
+  Building,
+  User,
+  Map,
+  MessageSquare
+} from 'lucide-react';
+
+interface ContactViewProps {
+  onSuccessInquiry: (inquiry: QuickBookRequest) => void;
+}
+
+export default function ContactView({ onSuccessInquiry }: ContactViewProps) {
+  const [formData, setFormData] = useState<QuickBookRequest>({
+    name: '',
+    phone: '',
+    applianceType: 'Washing Machine',
+    faultDescription: '',
+    location: ''
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [ticketId, setTicketId] = useState('');
+
+  const applianceOptions = [
+    'TVs & Smart Screens',
+    'Fridges & Freezers',
+    'Stoves & Ovens',
+    'Commercial Microwaves',
+    'Washing Machines',
+    'Dishwashers',
+    'Electrical Installations',
+    'Plumbing Services'
+  ];
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone || !formData.location) {
+      alert('Please fill out Name, Phone Number, and Service Location.');
+      return;
+    }
+
+    setLoading(true);
+    setTimeout(() => {
+      const generatedCode = 'WITECH-' + Math.floor(200000 + Math.random() * 800000);
+      setTicketId(generatedCode);
+      setLoading(false);
+      setSuccess(true);
+      onSuccessInquiry(formData);
+    }, 1200);
+  };
+
+  const getWhatsAppLaunchLink = () => {
+    const text = `Hello WITECH MEP Services, I have initiated a detailed quote request:
+*Ticket ID:* ${ticketId}
+*Customer:* ${formData.name}
+*Phone:* ${formData.phone}
+*Appliance Type:* ${formData.applianceType}
+*Location:* ${formData.location}
+*Description of Fault:* ${formData.faultDescription}`;
+    return `https://wa.me/263775749729?text=${encodeURIComponent(text)}`;
+  };
+
+  return (
+    <div id="contactpage-root" className="bg-[#FAF9F6] min-h-screen pt-28 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Contact Header for SEO */}
+        <div className="text-center space-y-4 max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center space-x-1.5 bg-white border border-stone-200 shadow-sm px-4 py-1.5 rounded text-[#B45309] text-xs font-bold tracking-wider uppercase font-sans">
+            <Building className="h-4 w-4 text-[#B45309]" />
+            <span>Local Business Schema Registered</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-[#1C1917] uppercase tracking-tight font-sans">
+            Contact & Booking Office
+          </h1>
+          <p className="text-sm md:text-base text-stone-500 font-sans font-semibold leading-relaxed">
+            Get instant assistance, upfront diagnostic quotes, and book structured service dispatches for residential homes and corporate infrastructure.
+          </p>
+          <div className="w-16 h-1 bg-[#B45309] mx-auto rounded-full mt-4" />
+        </div>
+
+        {/* Full-width interactive partition */}
+        <div id="contact-split-panels" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          {/* Panel 1: Primary Interactive quote form */}
+          <div className="lg:col-span-7 bg-white border border-stone-200 p-6 md:p-8 rounded shadow-sm">
+            <h2 className="text-lg font-extrabold text-[#1C1917] uppercase tracking-wide mb-6 font-sans border-b border-stone-150 pb-3">
+              Request Upfront Diagnostic Quote
+            </h2>
+
+            {!success ? (
+              <form onSubmit={handleFormSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Name Input */}
+                  <div className="space-y-1.5 focus-within:text-[#B45309] transition-colors">
+                    <label className="text-[10px] font-bold tracking-wider font-sans text-stone-500 uppercase block">
+                      Full Legal Name
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Irvine Chidza"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full bg-stone-50 border border-stone-200 focus:border-[#B45309] rounded py-2.5 px-4 text-xs text-[#1C1917] placeholder-stone-450 focus:ring-0 outline-none transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Phone Input */}
+                  <div className="space-y-1.5 focus-within:text-[#B45309] transition-colors">
+                    <label className="text-[10px] font-bold tracking-wider font-sans text-stone-500 uppercase block">
+                      Active Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="+263 775 749 729"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full bg-stone-50 border border-stone-200 focus:border-[#B45309] rounded py-2.5 px-4 text-xs text-[#1C1917] placeholder-stone-450 focus:ring-0 outline-none transition-colors"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Appliance Selection */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold tracking-wider font-sans text-stone-500 uppercase block">
+                      Appliance / System Category
+                    </label>
+                    <select
+                      value={formData.applianceType}
+                      onChange={(e) => setFormData({ ...formData, applianceType: e.target.value })}
+                      className="w-full bg-stone-50 border border-stone-200 focus:border-[#B45309] rounded py-2.5 px-4 text-xs text-[#1C1917] focus:ring-0 outline-none transition-colors font-sans font-semibold"
+                    >
+                      {applianceOptions.map((opt) => (
+                        <option key={opt} value={opt} className="bg-white text-[#1C1917]">
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Location Input */}
+                  <div className="space-y-1.5 focus-within:text-[#B45309] transition-colors">
+                    <label className="text-[10px] font-bold tracking-wider font-sans text-stone-500 uppercase block">
+                      Service Location (In/Around Harare)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 12 Glen eagles, Harare"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="w-full bg-stone-50 border border-stone-200 focus:border-[#B45309] rounded py-2.5 px-4 text-xs text-[#1C1917] placeholder-stone-450 focus:ring-0 outline-none transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Description Description */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold tracking-wider font-sans text-stone-500 uppercase block">
+                    Detailed Description of Fault
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Describe failure symptoms (e.g. microwave sparks when turned on, fridge light is on but fan is silent, tv powers but screen remains dark)..."
+                    value={formData.faultDescription}
+                    onChange={(e) => setFormData({ ...formData, faultDescription: e.target.value })}
+                    className="w-full bg-stone-50 border border-stone-200 focus:border-[#B45309] rounded py-3 px-4 text-[11px] text-[#1C1917] placeholder-stone-450 focus:ring-0 outline-none transition-colors resize-none font-sans"
+                  />
+                </div>
+
+                {/* Action Submit */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-4 bg-[#B45309] hover:bg-amber-805 text-white font-bold tracking-wider rounded text-xs transition-colors flex items-center justify-center space-x-2 cursor-pointer uppercase font-sans shadow-sm"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4.5 w-4.5 animate-spin" />
+                      <span>Transmitting Inquiry Blueprint...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-4.5 w-4.5 animate-bounce" />
+                      <span>Submit Interactive Inquiry Ticket</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : (
+              <div id="quote-submission-confirmation-box" className="text-center py-10 space-y-5">
+                <div className="inline-flex p-4 bg-green-50 text-green-600 rounded-full border border-green-200">
+                  <ShieldCheck className="h-12 w-12" />
+                </div>
+                <h3 className="text-2xl font-black text-[#1C1917] uppercase font-sans">
+                  Quote Ticket Booked
+                </h3>
+                <p className="text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
+                  Excellent, <span className="text-[#1C1917] font-bold">{formData.name}</span>. Your structured quote request has been cataloged under local reference code: <span className="text-[#B45309] font-sans font-extrabold tracking-widest text-md block mt-1">{ticketId}</span>
+                </p>
+                <div className="bg-stone-50 p-4 border border-stone-200 rounded max-w-md mx-auto text-left space-y-2 text-[10px] font-sans font-bold uppercase text-stone-600">
+                  <div><strong>DEVICE CATEGORY:</strong> {formData.applianceType}</div>
+                  <div><strong>SERVICE SITE:</strong> {formData.location}</div>
+                  <div><strong>REGISTERED PHONE:</strong> {formData.phone}</div>
+                </div>
+
+                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <a
+                    href={getWhatsAppLaunchLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-bold tracking-wider rounded text-xs flex items-center justify-center space-x-2 cursor-pointer uppercase shadow"
+                  >
+                    <MessageSquare className="h-4.5 w-4.5" />
+                    <span>Launch WhatsApp Dispatch</span>
+                  </a>
+                  <button
+                    onClick={() => {
+                      setSuccess(false);
+                      setFormData({
+                        name: '',
+                        phone: '',
+                        applianceType: 'Washing Machine',
+                        faultDescription: '',
+                        location: ''
+                      });
+                    }}
+                    className="w-full sm:w-auto px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded text-xs uppercase font-sans cursor-pointer border border-stone-200"
+                  >
+                    Raise New Ticket
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Panel 2: Secondary Address & Map Indicators */}
+          <div className="lg:col-span-5 space-y-8">
+            
+            {/* Physical Location Card */}
+            <div className="bg-white border border-stone-200 p-6 rounded space-y-5 shadow-sm">
+              <h3 className="text-xs font-black tracking-widest text-[#B45309] uppercase font-sans">
+                HEADQUARTERS LOCATION
+              </h3>
+              
+              <div className="flex items-start space-x-4">
+                <div className="p-3 bg-[#B45309]/10 text-[#B45309] rounded shrink-0">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div className="space-y-1">
+                  <strong className="block text-[#1C1917] text-xs font-extrabold uppercase tracking-wide font-sans">
+                    Physical Address
+                  </strong>
+                  <p className="text-xs text-stone-500 font-sans font-semibold leading-relaxed">
+                    12 Glen eagles Harare, Harare, Zimbabwe, 0000
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="p-3 bg-[#B45309]/10 text-[#B45309] rounded shrink-0">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <div className="space-y-1">
+                  <strong className="block text-[#1C1917] text-xs font-bold uppercase tracking-wide">
+                    Operational Core Hours
+                  </strong>
+                  <p className="text-xs text-stone-500 font-sans font-semibold leading-relaxed">
+                    Monday to Sunday: 24/7 Availability for Plumbing & Electrical Emergencies
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Direct Quick-Contact column */}
+            <div className="bg-white border border-stone-200 p-6 rounded space-y-4 shadow-sm">
+              <h3 className="text-xs font-black tracking-widest text-[#B45309] uppercase font-sans mb-2">
+                RAPID ACCESS LINES
+              </h3>
+              
+              {/* Call Link */}
+              <a
+                id="contact-call-btn"
+                href="tel:+263775749729"
+                className="flex items-center justify-between p-3.5 bg-stone-50 hover:bg-stone-100 rounded transition-all border border-stone-200"
+              >
+                <div className="flex items-center space-x-3.5">
+                  <Phone className="h-4.5 w-4.5 text-[#B45309]" />
+                  <span className="text-xs text-[#1C1917] font-bold font-sans">+263 775 749 729</span>
+                </div>
+                <span className="text-3xs font-bold font-mono tracking-widest bg-[#B45309]/10 text-[#B45309] px-2 py-0.5 rounded uppercase">
+                  CALL
+                </span>
+              </a>
+
+              {/* Email Link */}
+              <a
+                id="contact-email-link"
+                href="mailto:wiseirvinechidza1@gmail.com"
+                className="flex items-center justify-between p-3.5 bg-stone-50 hover:bg-stone-100 rounded transition-all border border-stone-200"
+              >
+                <div className="flex items-center space-x-3.5 min-w-0">
+                  <Mail className="h-4.5 w-4.5 text-[#B45309] shrink-0" />
+                  <span className="text-xs text-stone-600 truncate font-sans font-semibold">wiseirvinechidza1@gmail.com</span>
+                </div>
+                <span className="text-3xs font-bold font-sans tracking-widest bg-[#B45309]/10 text-[#B45309] px-2 py-0.5 rounded uppercase shrink-0">
+                  MAIL
+                </span>
+              </a>
+
+              {/* Facebook Link */}
+              <a
+                id="contact-fb-link"
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3.5 bg-stone-50 hover:bg-stone-100 rounded transition-all border border-stone-200"
+              >
+                <div className="flex items-center space-x-3.5">
+                  <Facebook className="h-4.5 w-4.5 text-[#B45309]" />
+                  <span className="text-xs text-stone-600 font-sans font-semibold">WITECH Facebook Community</span>
+                </div>
+                <span className="text-3xs font-bold font-sans tracking-widest bg-[#B45309]/10 text-[#B45309] px-2 py-0.5 rounded uppercase font-sans">
+                  JOIN
+                </span>
+              </a>
+
+              {/* WhatsApp Link */}
+              <a
+                id="contact-wa-link"
+                href="https://wa.me/263775749729"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3.5 bg-stone-50 hover:bg-stone-100 rounded transition-all border border-stone-200"
+              >
+                <div className="flex items-center space-x-3.5">
+                  <MessageSquare className="h-4.5 w-4.5 text-green-600" />
+                  <span className="text-xs text-stone-600 font-sans font-semibold">WITECH WhatsApp Support</span>
+                </div>
+                <span className="text-3xs font-bold font-sans tracking-widest bg-green-500/10 text-green-600 px-2 py-0.5 rounded uppercase font-sans">
+                  CHAT
+                </span>
+              </a>
+
+              {/* Instagram Link */}
+              <a
+                id="contact-ig-link"
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3.5 bg-stone-50 hover:bg-stone-100 rounded transition-all border border-stone-200"
+              >
+                <div className="flex items-center space-x-3.5">
+                  <Instagram className="h-4.5 w-4.5 text-[#B45309]" />
+                  <span className="text-xs text-stone-600 font-sans font-semibold">WITECH Instagram Showcase</span>
+                </div>
+                <span className="text-3xs font-bold font-sans tracking-widest bg-[#B45309]/10 text-[#B45309] px-2 py-0.5 rounded uppercase font-sans">
+                  FOLLOW
+                </span>
+              </a>
+
+              {/* TikTok Link */}
+              <a
+                id="contact-tt-link"
+                href="https://tiktok.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3.5 bg-stone-50 hover:bg-stone-100 rounded transition-all border border-stone-200"
+              >
+                <div className="flex items-center space-x-3.5">
+                  <svg className="h-4.5 w-4.5 text-[#1C1917]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.05 1.51 4.21 1.13.95 2.51 1.53 3.98 1.65v3.91c-1.28-.02-2.54-.37-3.61-1.12-.73-.51-1.33-1.17-1.78-1.95v7.23c.03 2.14-.68 4.29-2.07 5.92-1.42 1.63-3.56 2.64-5.74 2.72-2.22.08-4.48-.63-6.13-2.09-1.61-1.44-2.55-3.56-2.51-5.73.04-2.21 1.03-4.32 2.68-5.77 1.61-1.39 3.81-2.05 5.94-1.85V10.1c-1.3-.08-2.62.33-3.51 1.29s-1.32 2.37-1.15 3.66c.15 1.25.96 2.35 2.05 2.91 1.09.56 2.42.5 3.45-.16.96-.61 1.52-1.67 1.51-2.81V.02z" />
+                  </svg>
+                  <span className="text-xs text-stone-600 font-sans font-semibold">WITECH TikTok Tips & Demos</span>
+                </div>
+                <span className="text-3xs font-bold font-sans tracking-widest bg-stone-100 text-stone-600 px-2 py-0.5 rounded uppercase font-sans">
+                  WATCH
+                </span>
+              </a>
+            </div>
+
+            {/* Simulated/Representative Google Map with exact landmarks */}
+            <div className="bg-white border border-stone-200 rounded overflow-hidden shadow-sm p-2">
+              <div className="bg-[#1C1917] aspect-video rounded relative overflow-hidden flex flex-col justify-between p-4">
+                
+                {/* SVG based grid representation representing Map */}
+                <div className="absolute inset-0 opacity-20">
+                  <svg className="w-full h-full text-neutral-700" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                      </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+                    {/* Simulated routes */}
+                    <line x1="0" y1="50" x2="400" y2="150" stroke="#B45309" strokeWidth="2.5" strokeOpacity="1" />
+                    <line x1="0" y1="120" x2="400" y2="80" stroke="currentColor" strokeWidth="1" />
+                    <line x1="120" y1="0" x2="200" y2="400" stroke="currentColor" strokeWidth="1.5" />
+                  </svg>
+                </div>
+
+                <div className="relative z-10 flex items-center space-x-2 text-[10px] font-sans font-bold tracking-wider text-[#B45309] uppercase bg-stone-900/90 px-2.5 py-1 rounded w-fit select-none">
+                  <Map className="h-3.5 w-3.5 shrink-0" />
+                  <span>Interactive Map Location</span>
+                </div>
+
+                {/* Map Details overlays */}
+                <div className="relative z-10 bg-[#1C1917]/95 border border-stone-800 p-3 rounded flex items-center justify-between text-2xs font-sans">
+                  <div>
+                    <span className="block text-white font-bold uppercase tracking-wide text-[10px]">WITECH Headquarters Location</span>
+                    <span className="block text-stone-400 mt-0.5 font-sans leading-none text-[9px]">12 Glen eagles, Harare, Zimbabwe</span>
+                  </div>
+                  <a
+                    id="launch-google-maps"
+                    href="https://maps.google.com/?q=-17.8292,31.0522"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1.5 bg-[#B45309] text-white rounded transition-transform hover:scale-105"
+                    aria-label="Direct Google Maps redirect"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

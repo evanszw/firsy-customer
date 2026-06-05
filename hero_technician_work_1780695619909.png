@@ -1,0 +1,124 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState } from 'react';
+import { Page } from '../types';
+import { motion, AnimatePresence } from 'motion/react';
+import { Search, X, ChevronRight, HelpCircle, ArrowRight } from 'lucide-react';
+
+interface SearchOverlayProps {
+  isOpen: boolean;
+  onClose: () => void;
+  setCurrentPage: (page: Page) => void;
+}
+
+export default function SearchOverlay({ isOpen, onClose, setCurrentPage }: SearchOverlayProps) {
+  const [query, setQuery] = useState('');
+
+  const searchableItems = [
+    { title: 'TV Repair and Motherboard Replacement', page: Page.Services, subtitle: 'Sound, Power, HDMI ports, logic errors' },
+    { title: 'Refrigerator Gas Refills & Thermostat Calibration', page: Page.Services, subtitle: 'Not cooling, frosting compressor faults' },
+    { title: 'Ovens, Cooktops & Household Stoves', page: Page.Services, subtitle: 'Burners, electrical leakage wiring elements' },
+    { title: 'Microwave Magnetrons & High-voltage Fuse Systems', page: Page.Services, subtitle: 'Not heating, turntable sparks, dead pads' },
+    { title: 'Washing Machine Drum & Motor Overhauls', page: Page.Services, subtitle: 'Not spinning, drainage loops, loud noise' },
+    { title: 'Commercial Dishwasher Sealing', page: Page.Services, subtitle: 'Leaking gaskets, pumps, drainage filters' },
+    { title: 'Electrical Premises Rewiring & Solar Maintenance', page: Page.Services, subtitle: 'Tripping breakers, split boxes, inverters' },
+    { title: 'Copper Pipe Plumbing & Burst Main Repairs', page: Page.Services, subtitle: 'Copper/PVC leak localization, geyser thermostats' },
+    { title: 'About WITECH Mission & Irvines Background', page: Page.About, subtitle: 'Reducing e-waste, first-visit resolutions Harare' },
+    { title: 'Headquarters, Direct WhatsApp & Phone contact', page: Page.Contact, subtitle: '12 Glen eagles, quick quote forms Zimbabwe' },
+  ];
+
+  const filtered = searchableItems.filter((item) =>
+    item.title.toLowerCase().includes(query.toLowerCase()) ||
+    item.subtitle.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const handleItemClick = (page: Page) => {
+    setCurrentPage(page);
+    onClose();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          id="search-overlay-wrapper"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-md flex items-start justify-center pt-24 px-4"
+        >
+          <div className="w-full max-w-2xl bg-white border border-stone-200 rounded-lg p-6 shadow-2xl space-y-6">
+            
+            {/* Search Header */}
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold tracking-wider font-sans text-[#B45309] uppercase">
+                Global Services Search Index
+              </span>
+              <button
+                id="close-search-btn"
+                onClick={onClose}
+                className="p-1 text-[#44403C] hover:text-[#B45309] transition-colors"
+                aria-label="Close search"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Input Bar */}
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" />
+              <input
+                type="text"
+                autoFocus
+                placeholder="Type keywords (e.g. fridge, copper, Harare, stove)..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="w-full bg-stone-50 border border-stone-200 focus:border-[#B45309] rounded py-3 pl-11 pr-4 text-sm text-[#1C1917] placeholder-stone-400 focus:ring-0 outline-none transition-colors"
+              />
+            </div>
+
+            {/* Search Results */}
+            <div className="max-h-72 overflow-y-auto pr-2 space-y-2">
+              {filtered.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleItemClick(item.page)}
+                  className="w-full text-left p-3.5 bg-white hover:bg-stone-50 border border-stone-200 hover:border-[#B45309] rounded transition-all flex items-center justify-between group cursor-pointer"
+                >
+                  <div>
+                    <span className="block text-xs font-bold text-[#1C1917] uppercase group-hover:text-[#B45309] transition-colors">
+                      {item.title}
+                    </span>
+                    <span className="block text-[10px] text-stone-400 font-sans mt-0.5 uppercase tracking-wide">
+                      {item.subtitle}
+                    </span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-stone-300 group-hover:text-[#B45309] transition-transform group-hover:translate-x-1" />
+                </button>
+              ))}
+
+              {filtered.length === 0 && (
+                <div className="text-center py-10 space-y-2">
+                  <HelpCircle className="h-8 w-8 text-stone-300 mx-auto" />
+                  <p className="text-xs text-stone-400 uppercase font-sans font-bold">
+                    No matching MEP repair services found
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Help Prompt */}
+            <div className="text-[10px] text-stone-400 font-sans uppercase flex items-center justify-between border-t border-stone-200 pt-4 font-bold">
+              <span>Press ESC to retract search shroud</span>
+              <span className="text-[#B45309]">WITECH electronic registry</span>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

@@ -1,0 +1,156 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Page, QuickBookRequest } from './types';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import HomeView from './components/HomeView';
+import ServicesView from './components/ServicesView';
+import AboutView from './components/AboutView';
+import ContactView from './components/ContactView';
+import SearchOverlay from './components/SearchOverlay';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  Phone,
+  AlertCircle,
+  X,
+  PlusCircle,
+  MessagesSquare,
+  MessageSquare
+} from 'lucide-react';
+
+export default function App() {
+  const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
+  
+  // Overlay interactive toggles
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
+  // Dynamic business states
+  const [recentBookings, setRecentBookings] = useState<QuickBookRequest[]>([]);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Trigger quick popup toast alerts when users request visits or quotes
+  const handleNewBookInquiry = (inquiry: QuickBookRequest) => {
+    setRecentBookings((prev) => [inquiry, ...prev]);
+    setToastMessage(`Your booking for ${inquiry.applianceType} was successfully queued on our Harare system!`);
+    
+    // Automatically hide after 6 seconds
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 6000);
+  };
+
+  // Keyboard accessibility triggers for shutting down search overlays
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  return (
+    <div id="app-canvas-container" className="min-h-screen bg-[#FAF9F6] text-[#1C1917] flex flex-col justify-between font-sans">
+      
+      {/* Universal Floating Help Anchor (WhatsApp Direct overlay) */}
+      <a
+        id="floating-whatsapp-anchor"
+        href="https://wa.me/263775749729"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-40 p-4 bg-green-600 hover:bg-green-500 text-white rounded-full shadow-2xl transition-transform duration-300 transform hover:scale-110 active:scale-95 flex items-center justify-center border border-green-500/30 group"
+        aria-label="Direct chat with Irvine Chidza via WhatsApp"
+      >
+        <MessageSquare className="h-6 w-6 group-hover:rotate-12 transition-transform" />
+        <span className="max-w-0 overflow-hidden group-hover:max-w-44 group-hover:ml-2.5 text-xs font-bold tracking-wider uppercase font-mono transition-all duration-300 whitespace-nowrap">
+          WhatsApp Irvine
+        </span>
+      </a>
+
+      {/* Dynamic Pop-up Toast Alert Banner */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            id="global-system-toast"
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.95 }}
+            className="fixed bottom-24 left-6 right-6 md:left-auto md:right-8 z-50 max-w-sm bg-white border border-stone-200 border-l-4 border-l-[#B45309] rounded-lg p-4 shadow-xl flex items-start space-x-3"
+          >
+            <div className="p-1 bg-[#B45309]/10 text-[#B45309] rounded">
+              <AlertCircle className="h-4.5 w-4.5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="block text-[10px] font-extrabold text-[#B45309] uppercase tracking-wider font-sans">System Notice</span>
+              <p className="text-xs text-[#44403C] leading-relaxed font-sans mt-0.5">
+                {toastMessage}
+              </p>
+            </div>
+            <button
+              id="dismiss-toast-btn"
+              onClick={() => setToastMessage(null)}
+              className="p-1 text-stone-400 hover:text-[#1C1917] transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Navigation Header */}
+      <Header
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        onOpenSearch={() => setIsSearchOpen(true)}
+      />
+
+      {/* Main Multi-Screen Content Layout Box with Fade Transitions */}
+      <main id="primary-viewport-layout" className="flex-grow">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.35, ease: 'easeInOut' }}
+          >
+            {currentPage === Page.Home && (
+              <HomeView
+                setCurrentPage={setCurrentPage}
+                onSubmitInquiry={handleNewBookInquiry}
+              />
+            )}
+            {currentPage === Page.Services && (
+              <ServicesView />
+            )}
+            {currentPage === Page.About && (
+              <AboutView
+                setCurrentPage={setCurrentPage}
+              />
+            )}
+            {currentPage === Page.Contact && (
+              <ContactView
+                onSuccessInquiry={handleNewBookInquiry}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+
+      {/* Search Overlay Portal */}
+      <SearchOverlay
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        setCurrentPage={setCurrentPage}
+      />
+
+      {/* Global Bottom Footer */}
+      <Footer setCurrentPage={setCurrentPage} />
+    </div>
+  );
+}
